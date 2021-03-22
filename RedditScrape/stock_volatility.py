@@ -8,14 +8,53 @@ import math
 
 # Basically what I'm trying to do is create an account info which can provide
 class AccountInfo:
-    def __init__(self, available_fund)
-    self.available_fund = available_fund
+    def __init__(self, available_fund, percentage_increase, percentage_decrease, percentage_to_take_profit):
+        self.available_fund = available_fund
+        self.percentage_increase = percentage_increase
+        self.percentage_decrease = percentage_decrease
+        self.percentage_to_take_profit = percentage_to_take_profit
+
+    @property
+    def get_available_fund(self):
+        return self.available_fund
+
+    @property
+    def get_percentage_decrease(self):
+        return self.percentage_decrease
+
+    @property
+    def get_percentage_increase(self):
+        return self.percentage_increase
+
+    @property
+    def get_percentage_to_take_profit(self):
+        return self.percentage_to_take_profit
+
+    @percentage_to_take_profit.setter
+    def percentage_to_take_profit(self, percentage_to_take_profit):
+        self.percentage_to_take_profit = percentage_to_take_profit
+
+    @percentage_increase.setter
+    def percentage_increase(self, percentage_increase):
+        self.percentage_increase = percentage_increase
+
+    @percentage_decrease.setter
+    def percentage_decrease(self, percentage_decrease):
+        self.percentage_decrease = percentage_decrease
 
 
 class BasicStockInfo:
     def __init__(self, stock_name, current_close):
         self.stock_name = stock_name
         self.current_close = current_close
+
+    @property
+    def get_stock_name(self):
+        return self.stock_name
+
+    @property
+    def get_current_stock_price(self):
+        return self.current_close
 
 
 class DetailedStockInfo(BasicStockInfo):
@@ -25,53 +64,84 @@ class DetailedStockInfo(BasicStockInfo):
         self.previous_averaged_volume = previous_averaged_volume
         self.todays_volume = todays_volume
 
+    @property
+    def get_previous_averaged_volume(self):
+        return self.previous_averaged_volume
 
-class TradingOrder (BasicStockInfo, AccountInfo):
-    def __init__(self, stock_name, current_close, quantity):
-        super(TradingOrder, self).__init__()
+    @property
+    def get_todays_volume(self):
+        return self.get_todays_volume
+
+    @property
+    def get_yesterday_price(self):
+        return self.previous_close
+
+
+class TradingOrder (DetailedStockInfo, AccountInfo):
+    def __init__(self, stock_name, current_close, quantity, available_fund):
+        super(TradingOrder, self).__init__(
+            stock_name, current_close, available_fund)
         self.quantity = quantity
         self.available_fund = available_fund
+        self.initial_stock_price = 0
+        self.total_initial_cost = 0
+        self.total_cost = 0
 
-    def buy_order(self):
-        # TODO: Make a way to simulating trading. Current fund should be "static" and keep its value. Send notification that a trade was made
+    def buy_order():
         self.quantity = math.floor(self.available_fund / self.current_close)
+        self.total_initial_cost = self.quantity * self.current_close
         if (self.available_fund > 500):
-            available_fund = - available_fund/quantity
+            self.available_fund = self.available_fund - self.total_initial_cost
+        self.initial_stock_price = self.current_close
 
-        return available_fund, quantity
+    def sell_order(current_close, quantity):
+        if (quantity > self.quantity and quantity < 0):
+            raise ValueError(
+                "Invalid quantity. Check to see if quantity is greater than 0 and is not more than what you currently own")
+            return
+        self.quantity -= quantity
+        self.current_close = current_close
+        self.available_fund += quantity * current_close
 
-    def initial_cost(self):
+    def threshold_reach(current_close, )
 
-    def sell_order(available_fund, quantity, current_close):
-        available_fund += quantity * current_close
+    @current_close.setter
+    def current_close(self, current_close):
+        self.current_close = current_close
 
-        return available_fund, false
+    @property
+    def get_total_value(self):
+        return self.quantity * self.current_close
 
-
-percentage_increase = 5
-percentage_decrease = -10
-take_profits = 10
-input_period = 7
-
-
-def percentage_meet_criteria(current_close, previous_close, percentage_change):
-    if (percentage_change < 0):
-        # If percentage_change < 0 which mean we're checking for when it goes below a stop loss
-        if (percentage_change > (100((current_close - previous_close)/previous_close))):
-            return true
-    else:
-        # Checking to see if it goes above a buy in
-        if (percentage_change < (100((current_close - previous_close)/previous_close))):
-            return true
+    @property
+    def get_total_profit(self):
+        return self.total_cost - self.initial_stock_price
 
 
-def trigger_sell(current_close, bought_price):
-    if(percentage_meet_criteria(current_close, bought_price, percentage_decrease)):
-        return true
-        # TODO: Link the Interactive API to automatically sell. Even better use the API to set a stop loss as soon as a buy is made
-    if(percentage_meet_criteria(current_close, bought_price, take_profits)):
-        return true
-        # TODO: Link the Interactive API to automatically sell. Even better use the API to set a take profit after a buy is made
+# percentage_increase = 5
+# percentage_decrease = -10
+# take_profits = 10
+# input_period = 7
+
+
+# def percentage_meet_criteria(current_close, previous_close, percentage_change):
+#     if (percentage_change < 0):
+#         # If percentage_change < 0 which mean we're checking for when it goes below a stop loss
+#         if (percentage_change > (100((current_close - previous_close)/previous_close))):
+#             return true
+#     else:
+#         # Checking to see if it goes above a buy in
+#         if (percentage_change < (100((current_close - previous_close)/previous_close))):
+#             return true
+
+
+# def trigger_sell(current_close, bought_price):
+#     if(percentage_meet_criteria(current_close, bought_price, percentage_decrease)):
+#         return true
+#         # TODO: Link the Interactive API to automatically sell. Even better use the API to set a stop loss as soon as a buy is made
+#     if(percentage_meet_criteria(current_close, bought_price, take_profits)):
+#         return true
+#         # TODO: Link the Interactive API to automatically sell. Even better use the API to set a take profit after a buy is made
 
 
 def get_stock_information(stock_name, stockBought=false):
