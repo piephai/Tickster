@@ -1,0 +1,14 @@
+{
+  "name": "sticky-stocks",
+  "version": "1.0.0",
+  "description": "automatic stock analysis",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "author": "Hayden Moulds",
+  "license": "ISC",
+  "dependencies": {
+    "superagent": "^6.1.0"
+  }
+}
