@@ -13,7 +13,6 @@ class AccountInfo:
     def __init__(self, available_fund, percentage_increase, percentage_decrease, percentage_to_take_profit):
         self.stock_holdings = pd.DataFrame(
             columns=['Name', 'Close', 'Quantity', 'Date'])
-
         self.set_percentage_decrease(percentage_decrease)
         self.set_percentage_increase(percentage_increase)
         self.set_percentage_to_take_profit(percentage_to_take_profit)
@@ -46,32 +45,44 @@ class AccountInfo:
     def set_percentage_decrease(self, percentage_decrease):
         self.percentage_decrease = percentage_decrease / 100
 
-    def add_new_holdings(self, stock_name: str, close: float, quantity: int, date):
-
-        new_row = {'Name': stock_name, 'Close': close,
-                   'Quantity': quantity, 'Date': date}
-        self.stock_holdings = self.stock_holdings.append(
-            new_row, ignore_index=True)
+    def add_new_holdings(self, stock_name: str, close: float, quantity: int, date: date):
+        try:
+            new_row = {'Name': stock_name, 'Close': close,
+                       'Quantity': quantity, 'Date': date}
+            self.stock_holdings = self.stock_holdings.append(
+                new_row, ignore_index=True)
+        except:
+            print(Exception)
 
     def get_holdings(self):
         return self.stock_holdings
 
+    def get_specific_holding(self, stock_name):
+        return self.stock_holdings[self.stock_holdings.Name.isin([stock_name])]
 
-# class StockInfo:
-#     def __init__(self):
-#         self.stock_holdings = pd.DataFrame(
-#             columns=['Name', 'Close', 'Todays_Volume', 'Previous_Averaged_Volume', 'Open'])
 
-#     def add_stock_info(self, stock_name, close_price, todays_volume, previous_averaged_volume, open_price):
-#         if (self.stock_holdings.loc[(self.stock_holdings[0] == stock_name)]):
-#             self.stock_holdings.loc[(self.stock_holdings[0] == stock_name)] = [
-#                 [stock_name, close_price, todays_volume, previous_averaged_volume, open_price]]
-#         else:
-#             self.stock_holdings.loc[-1] = [stock_name, close_price,
-#                                            todays_volume, previous_averaged_volume, open_price]
+class StockInfo:
+    def __init__(self):
+        self.stock_holdings = pd.DataFrame(
+            columns=['Name', 'Close', 'Todays_Volume', 'Previous_Averaged_Volume', 'Open'])
 
-#     def get_stock_info(self, stock_name):
-#         return self.stock_holdings['Name'] == stock_name
+    def update_stock_info(self, stock_name, close_price, todays_volume, previous_averaged_volume, open_price):
+        if (stock_name in self.stock_holdings.values):
+            index = self.stock_holdings[self.stock_holdings['Name']
+                                        == stock_name].index.values
+            self.stock_holdings.loc[index, ['Name', 'Close', 'Todays_Volume', 'Previous_Averaged_Volume', 'Open']] = [
+                stock_name, close_price, todays_volume, previous_averaged_volume, open_price]
+        else:
+            try:
+                new_row = {'Name': stock_name, 'Close': close_price,
+                           'Todays_Volume': todays_volume, 'Previous_Averaged_Volume': previous_averaged_volume, 'Open': open_price}
+                self.stock_holdings = self.stock_holdings.append(
+                    new_row, ignore_index=True)
+            except:
+                print(Exception)
+
+    def get_stock_info(self, stock_name):
+        return self.stock_holdings[self.stock_holdings.Name.isin([stock_name])]
 
 
 # For getting the current stock price
@@ -280,4 +291,10 @@ if __name__ == '__main__':
     accountInfo.add_new_holdings('SOR', 20.0, 50, "10/02/1998")
     print(accountInfo.get_holdings())
     accountInfo.add_new_holdings('CXO', 0.3, 50, "10/02/1998")
-    print(accountInfo.get_holdings())
+    print(accountInfo.get_specific_holding('CXO'))
+
+    stockInfo = StockInfo()
+    stockInfo.update_stock_info('CXO', 0.3, 100000, 10000, 0.2)
+    print(stockInfo.get_stock_info('CXO'))
+    stockInfo.update_stock_info('CXO', 0.6, 100000, 10000, 0.2)
+    print(stockInfo.get_stock_info('CXO'))
