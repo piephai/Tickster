@@ -1,3 +1,4 @@
+from datetime import date, datetime
 import yfinance as yf
 import pandas as pd
 import numpy as np
@@ -12,6 +13,7 @@ class AccountInfo:
     def __init__(self, available_fund, percentage_increase, percentage_decrease, percentage_to_take_profit):
         self.stock_holdings = pd.DataFrame(
             columns=['Name', 'Close', 'Quantity', 'Date'])
+
         self.set_percentage_decrease(percentage_decrease)
         self.set_percentage_increase(percentage_increase)
         self.set_percentage_to_take_profit(percentage_to_take_profit)
@@ -44,12 +46,15 @@ class AccountInfo:
     def set_percentage_decrease(self, percentage_decrease):
         self.percentage_decrease = percentage_decrease / 100
 
-    def add_new_property(self, list_df):
-        frames = []
-        frames.append(self.stock_holdings)
-        for df in list_df:
-            frames.append(df)
-        pd.concat(frames)
+    def add_new_holdings(self, stock_name: str, close: float, quantity: int, date):
+
+        new_row = {'Name': stock_name, 'Close': close,
+                   'Quantity': quantity, 'Date': date}
+        self.stock_holdings = self.stock_holdings.append(
+            new_row, ignore_index=True)
+
+    def get_holdings(self):
+        return self.stock_holdings
 
 
 # class StockInfo:
@@ -268,8 +273,11 @@ if __name__ == '__main__':
     # runInParallel(check_stock_volume('tickersA-K.csv', available_fund, stockBought),
     #               check_stock_volume('tickersL-Z.csv', available_fund, stockBought))
     accountInfo = AccountInfo(1000, 5, 10, 10)
-    print(accountInfo.get_available_fund())
-    # stockInfo = StockInfo()
 
-    # stockInfo.add_stock_info("SOR", 19.0, 100000, 10000, 18.0)
-    # stockInfo.get_stock_info("SOR")
+    df = pd.DataFrame(
+        columns=['Name', 'Close', 'Quantity', 'Date'])
+    df.loc[-1] = ['SOR', 20.0, 50, "10/02/1998"]
+    accountInfo.add_new_holdings('SOR', 20.0, 50, "10/02/1998")
+    print(accountInfo.get_holdings())
+    accountInfo.add_new_holdings('CXO', 0.3, 50, "10/02/1998")
+    print(accountInfo.get_holdings())
