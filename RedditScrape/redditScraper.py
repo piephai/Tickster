@@ -54,7 +54,7 @@ class SubredditScraper:
     def get_posts(self):
 
         stockTickers = {}
-        with open('tickersMS.csv', mode='r') as infile:
+        with open('tickers.csv', mode='r') as infile:
             reader = csv.reader(infile)
             for row in reader:
                 stockTickers[row[0].split(',')[0]] = {}
@@ -84,4 +84,4 @@ class SubredditScraper:
 
 
 if __name__ == '__main__':
-    SubredditScraper('asx_bets', lim=10, sort='hot').get_posts()
+    SubredditScraper('ASX_bets', lim=10, sort='hot').get_posts()
